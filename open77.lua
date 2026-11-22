@@ -14,11 +14,18 @@ permissions {
     "ui.vanilla.hud",     -- Open77.hud.setVisible (vanilla HUD claims)
     "voice.client",       -- Open77.voice.status (talking state and level of the voice block, read only)
     "player.weapons.read", -- Open77.weapons.shotCounters (shot kick of the camera float)
+    "http.request", -- server: Open77.http.get (update check, Config.versionCheck)
 }
 
 client_scripts {
     "config.lua",
     "client/main.lua",
+}
+
+-- Server side only for the update check (Config.versionCheck).
+server_scripts {
+    "config.lua",
+    "server/version.lua",
 }
 
 files {

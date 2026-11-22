@@ -1,0 +1,76 @@
+<rml>
+<head>
+    <title>opx_hud bio</title>
+    <link type="text/rcss" href="nui://open77/open77.rcss"/>
+    <link type="text/rcss" href="hud.rcss"/>
+</head>
+<body data-model="hud">
+<div id="root">
+
+    <!-- Biomonitor: brackets, heartbeat trace, armor segments, stamina ring, needs.
+         Anchor position comes from Config.positions.status (the "layout" stylesheet); the tilt toward
+         the centre and the camera float are this document's projection (client/modules/float.lua). -->
+    <div id="status-anchor" class="anchor" data-class-on="statusOn || needsOn || customOn">
+        <div id="bio" data-class-low="statusOn &amp;&amp; lowAt >= health" data-class-crit="statusOn &amp;&amp; critAt >= health">
+            <div class="br-row top">
+                <path class="br" view-box="0 0 14 14" d="M0.75 13 V0.75 H13"/>
+                <span class="bio-title">{{t.bio}}</span>
+                <div class="dots"></div>
+                <path class="br" view-box="0 0 14 14" d="M1 0.75 H13.25 V13"/>
+            </div>
+            <div class="bio-body">
+                <div class="vitals-block" data-if="statusOn">
+                    <div class="vitals">
+                        <div id="ecg" data-style-decorator="ecg"></div>
+                        <div class="hp">
+                            <span class="hp-num">{{health}}</span>
+                            <span class="cap">{{t.health}}</span>
+                        </div>
+                    </div>
+                    <div class="row2" data-if="armorOn || staminaOn">
+                        <div class="armor" data-if="armorOn">
+                            <div class="segs">
+                                <div class="aseg" data-for="s : armorSegs" data-class-lit="armor >= s.t"></div>
+                            </div>
+                            <span class="cap">{{t.armor}}</span>
+                            <span class="num">{{armor}}</span>
+                        </div>
+                        <div class="stamina" data-if="staminaOn" data-class-low="lowAt >= stamina">
+                            <div class="ring">
+                                <shape type="circle" class="ring-track"/>
+                                <shape type="circle" class="ring-fill" data-style-trim-end="stamina / 100"/>
+                            </div>
+                            <span class="cap">{{t.stamina}}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- hunger, thirst, then the custom gauges of other resources (SetCustomStatus), two per row -->
+                <div class="needs" data-if="needsOn || customOn">
+                    <div class="need" data-if="hungerOn" data-class-low="lowAt >= hunger">
+                        <span class="cap">{{t.hunger}}</span>
+                        <div class="gauge"><div class="gfill" data-style-width="hunger * 0.44 + 'dp'"></div></div>
+                        <span class="num">{{hunger}}</span>
+                    </div>
+                    <div class="need" data-if="thirstOn" data-class-low="lowAt >= thirst">
+                        <span class="cap">{{t.thirst}}</span>
+                        <div class="gauge"><div class="gfill" data-style-width="thirst * 0.44 + 'dp'"></div></div>
+                        <span class="num">{{thirst}}</span>
+                    </div>
+                    <div class="need" data-for="c : custom" data-class-low="c.low">
+                        <span class="cap">{{c.label}}</span>
+                        <div class="gauge"><div class="gfill" data-style-width="c.value * 0.44 + 'dp'"></div></div>
+                        <span class="num">{{c.value}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="br-row bottom">
+                <path class="br" view-box="0 0 14 14" d="M0.75 1 V13.25 H13"/>
+                <div class="dots"></div>
+                <path class="br" view-box="0 0 14 14" d="M13.25 1 V13.25 H1"/>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</rml>

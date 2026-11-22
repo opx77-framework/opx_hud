@@ -1,0 +1,264 @@
+/* =============================================================================
+   opx_hud — "Biomoniteur". OPX//77 tokens (RCSS has no variables: retheme by
+   replacing these values in the THEME block below).
+     holo        #4fe3ff              lines, brackets, lit segments, labels (alpha: #4fe3ffXX)
+     alert       #ff3b47              low values, off duty, engine off, damage
+     text        #e9fbff              primary text
+     text-dim    #86a9b5              labels, secondary text
+     panel       rgba(3,17,23,0.80)   the few surfaces that need one (strip, gradients)
+     ink-on      #071013              text on an accent fill (key cap)
+   A few colours also live in Lua: the heartbeat trace (client/modules/ecg.lua),
+   the voice wave (client/modules/wave.lua) and the money flick (motion.lua).
+   One sheet for the five documents (bio, info, vehicle, voice, help .rml).
+   Each block is its own document: its tilt toward the centre and its camera
+   float are the document's projection (client/modules/float.lua), not RCSS;
+   the anchor position comes from the "layout" stylesheet layer.
+   Surfaces are drawn on the elements themselves: an absolute layer inside an
+   auto-height block would not get its height (RmlUi).
+   ============================================================================= */
+
+/* ---- THEME ----------------------------------------------------------------- */
+#root                    { color: #e9fbff; }
+.cap                     { color: #86a9b5; }
+.br                      { stroke: #4fe3ff; }
+.bio-title               { color: #4fe3ff; }
+.dots                    { decorator: repeating-linear-gradient(90deg, #4fe3ff59 0dp, #4fe3ff59 2dp, #4fe3ff00 2dp, #4fe3ff00 6dp); }
+.bio-body                {
+    border-color: #4fe3ff24;
+    decorator: linear-gradient(90deg, #031117b3 0%, #03111759 70%, #03111700 100%);
+}
+.hp-num                  { color: #e9fbff; }
+.aseg                    { background-color: #4fe3ff1f; }
+.aseg.lit                { background-color: #4fe3ff; }
+.armor .num, .need .num  { color: #e9fbff; }
+.ring-track              { stroke: #4fe3ff2e; }
+.ring-fill               { stroke: #4fe3ff; }
+.gauge                   { background-color: #4fe3ff1f; }
+.gfill                   { background-color: #4fe3ff; }
+/* low values: alert red */
+#bio.low .br, #bio.crit .br { stroke: #ff3b47; }
+#bio.low .bio-title      { color: #ff3b47; }
+#bio.low .hp-num         { color: #ff3b47; }
+.need.low .cap, .need.low .num, .stamina.low .cap { color: #ff3b47; }
+.need.low .gfill         { background-color: #ff3b47; }
+.stamina.low .ring-fill  { stroke: #ff3b47; }
+
+#info                    { decorator: fx(chamfer 10 1 0.80 0 #4fe3ff59); }
+.cash, .bank             { color: #e9fbff; }
+.sep, .grade             { color: #86a9b5; }
+.job                     { color: #e9fbff; }
+.duty-dot                { background-color: #4fe3ff; box-shadow: #4fe3ff99 0dp 0dp 6dp 0dp; }
+.duty                    { color: #4fe3ff; }
+.job-row.off .duty-dot   { background-color: #ff3b47; box-shadow: #ff3b4799 0dp 0dp 6dp 0dp; }
+.job-row.off .duty       { color: #ff3b47; }
+
+#vehicle                 { decorator: linear-gradient(0deg, #031117b3 0%, #03111773 60%, #03111700 100%); }
+.speed                   { color: #e9fbff; }
+.unit                    { color: #86a9b5; }
+.vseg                    { background-color: #4fe3ff1f; }
+.vseg.lit                { background-color: #4fe3ff; }
+.vseg.lit.hot            { background-color: #ff3b47; }
+.hair                    { background-color: #4fe3ff59; }
+#vehicle .num            { color: #e9fbff; }
+#vehicle.low .num, #vehicle.low .cap { color: #ff3b47; }
+#vehicle.low .hair       { background-color: #ff3b4799; }
+#vehicle.off .speed      { color: #86a9b5; }
+.engine-off span         { color: #ff3b47; }
+
+#help                    { decorator: linear-gradient(90deg, #03111700 0%, #031117b3 14%, #031117b3 86%, #03111700 100%); }
+
+/* voice: mirror of the biomonitor (dark side on the right, the screen edge) */
+.vox-body                {
+    border-color: #4fe3ff24;
+    decorator: linear-gradient(270deg, #031117b3 0%, #03111759 70%, #03111700 100%);
+}
+.vox-state               { color: #86a9b5; }
+.vmode                   { color: #e9fbff; }
+.vdist                   { color: #e9fbff; }
+.pip                     { background-color: #4fe3ff1f; }
+.pip.lit                 { background-color: #4fe3ff; }
+.keycap.ghost            { decorator: fx(chamfer 4 1 0.6 0 #4fe3ff8c); }
+.keycap.ghost span       { color: #e9fbff; }
+#vox.talking .vox-state  { color: #4fe3ff; }
+#vox.talking .ptt        { decorator: fx(chamfer-solid 4 4 0 0 #4fe3ff); }
+#vox.talking .ptt span   { color: #071013; }
+/* talking peak and muted microphone: alert red */
+#vox.peak .vox-state     { color: #ff3b47; }
+#vox.peak .ptt           { decorator: fx(chamfer-solid 4 4 0 0 #ff3b47); }
+#vox.muted .vox-state    { color: #ff3b47; }
+#vox.muted .ptt          { decorator: fx(chamfer 4 1 0.6 0 #ff3b4799); }
+#vox.muted .ptt span     { color: #ff3b47; }
+/* voice offline: everything dim */
+#vox.offline .br         { stroke: #86a9b5; }
+#vox.offline .bio-title, #vox.offline .vmode, #vox.offline .vdist { color: #86a9b5; }
+#vox.offline .pip.lit    { background-color: #86a9b5; }
+.keycap                  { decorator: fx(chamfer-solid 4 0 0 0 #4fe3ff); }
+.keycap span             { color: #071013; }
+.help-type               { color: #e9fbff; border-color: #4fe3ff00; }
+
+/* ---- LAYOUT ---------------------------------------------------------------- */
+body, #root { width: 100%; height: 100%; pointer-events: none; }
+#root { font-family: Rajdhani; font-size: 16dp; }
+
+/* Anchors are placed by Lua (Config.positions) through the "layout" stylesheet; shown with .on. */
+.anchor    { position: absolute; display: none; flex-direction: column; }
+.anchor.on { display: flex; }
+
+.cap {
+    font-family: "Chakra Petch"; font-size: 11dp; letter-spacing: 2dp;
+    flex-shrink: 0;
+}
+.num { font-family: "Roboto Mono"; font-size: 13dp; flex-shrink: 0; }
+
+/* ---- biomonitor ---- */
+#bio { display: flex; flex-direction: column; width: 340dp; }
+
+.br-row        { display: flex; flex-direction: row; height: 14dp; }
+.br-row.top    { align-items: flex-start; }
+.br-row.bottom { align-items: flex-end; }
+.br            { width: 14dp; height: 14dp; flex-shrink: 0; fill: transparent; stroke-width: 1.5dp; trim-end: 1; }
+.bio-title {
+    flex-shrink: 0; margin: -6dp 8dp 0dp 8dp; font-family: "Chakra Petch"; font-size: 12dp;
+    line-height: 14dp; letter-spacing: 4dp;
+}
+.dots              { flex: 1 1 0dp; height: 1dp; }
+.br-row.top .dots    { margin: 0dp 4dp 0dp 0dp; }
+.br-row.bottom .dots { margin: 0dp 4dp 1dp 4dp; }
+
+.bio-body {
+    display: flex; flex-direction: column; padding: 4dp 14dp 6dp 14dp;
+    border-left-width: 1dp; border-right-width: 1dp;
+}
+
+.vitals { display: flex; flex-direction: row; align-items: center; }
+#ecg    { width: 230dp; height: 48dp; flex-shrink: 0; }
+.hp     { display: flex; flex-direction: column; align-items: flex-end; flex: 1 1 0dp; }
+.hp-num { font-family: "Roboto Mono"; font-size: 32dp; line-height: 34dp; }
+.hp .cap { font-size: 10dp; }
+
+.row2    { display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-top: 6dp; }
+.armor   { display: flex; flex-direction: row; align-items: center; }
+.segs    { display: flex; flex-direction: row; flex-shrink: 0; margin-right: 10dp; }
+.aseg    { width: 11dp; height: 6dp; margin-right: 3dp; transform: skewX(-20deg); }
+.armor .num { margin-left: 8dp; }
+.stamina { display: flex; flex-direction: row; align-items: center; margin-left: 12dp; }
+.stamina:first-child { margin-left: 0dp; }
+.ring    { position: relative; width: 18dp; height: 18dp; flex-shrink: 0; margin-right: 8dp; }
+.ring-track, .ring-fill {
+    position: absolute; left: 0dp; top: 0dp; width: 18dp; height: 18dp;
+    fill: transparent; stroke-width: 2dp;
+}
+.ring-fill { transform: rotate(-90deg); transition: trim-end 0.25s cubic-out; }
+
+/* hunger, thirst and the custom gauges (SetCustomStatus) wrap two per row */
+.needs  { display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 3dp; }
+.need   { display: flex; flex-direction: row; align-items: center; margin: 4dp 18dp 0dp 0dp; }
+.need .num { min-width: 24dp; }
+.gauge  { width: 44dp; height: 4dp; flex-shrink: 0; margin: 0dp 8dp; }
+.gfill  { height: 4dp; transition: width 0.4s cubic-out; }
+
+/* low values: a short pulse when they cross the threshold; critical health keeps pulsing */
+@keyframes low-pulse {
+    from { opacity: 1; }
+    to   { opacity: 0.3; }
+}
+#bio.low .hp-num, .need.low, .stamina.low, #vehicle.low .cond-row { animation: 0.35s cubic-in-out 4 alternate low-pulse; }
+#bio.crit .hp-num { animation: 0.8s sine-in-out infinite alternate low-pulse; }
+
+/* entrance: the brackets draw themselves (class "in" set on show) */
+@keyframes br-draw {
+    from { trim-end: 0; }
+    to   { trim-end: 1; }
+}
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+#root.in .br   { animation: 0.7s cubic-out br-draw; }
+#root.in .dots { animation: 0.9s cubic-out fade-in; }
+
+/* ---- money / job strip ---- */
+#info {
+    display: flex; flex-direction: column; align-items: flex-end;
+    padding: 7dp 22dp 8dp 22dp;
+}
+.money-row, .job-row { display: flex; flex-direction: row; align-items: center; }
+.cash, .bank { font-family: "Roboto Mono"; font-size: 17dp; flex-shrink: 0; }
+.money-row .cap { margin-right: 6dp; }
+.sep { flex-shrink: 0; margin: 0dp 8dp; }
+.job-row { margin-top: 2dp; }
+.job, .grade { flex-shrink: 0; font-family: "Chakra Petch"; font-size: 12dp; letter-spacing: 2dp; }
+.duty-dot { width: 7dp; height: 7dp; border-radius: 4dp; flex-shrink: 0; margin: 0dp 6dp 0dp 14dp; }
+.duty { flex-shrink: 0; font-family: "Chakra Petch"; font-size: 11dp; letter-spacing: 2dp; }
+
+/* ---- vehicle dashboard ---- */
+#vehicle { display: flex; flex-direction: column; align-items: center; padding: 6dp 26dp 8dp 26dp; }
+.speed-row  { display: flex; flex-direction: row; align-items: flex-end; }
+.vbar       { display: flex; flex-direction: row; align-items: flex-end; height: 24dp; flex-shrink: 0; margin-bottom: 9dp; }
+.vseg       { width: 7dp; margin: 0dp 2dp; flex-shrink: 0; }
+.speed-read { display: flex; flex-direction: row; align-items: flex-end; margin: 0dp 14dp; }
+.speed      { width: 96dp; flex-shrink: 0; font-family: "Roboto Mono"; font-size: 46dp; line-height: 50dp; text-align: right; }
+.unit {
+    width: 44dp; flex-shrink: 0; margin: 0dp 0dp 9dp 6dp; font-family: "Chakra Petch"; font-size: 12dp;
+    letter-spacing: 1dp;
+}
+.cond-row   { display: flex; flex-direction: row; align-items: center; margin-top: 2dp; }
+.hair       { width: 44dp; height: 1dp; flex-shrink: 0; margin: 0dp 10dp; }
+.cond-row .num { margin-left: 6dp; }
+.engine-off { margin-top: 3dp; }
+.engine-off span {
+    font-family: "Chakra Petch"; font-size: 11dp; letter-spacing: 3dp;
+}
+
+/* ---- voice block ---- */
+#vox { display: flex; flex-direction: column; width: 320dp; }
+.vox-state {
+    flex-shrink: 0; margin: -6dp 0dp 0dp 6dp; font-family: "Chakra Petch"; font-size: 10dp;
+    line-height: 14dp; letter-spacing: 2dp;
+}
+#vox .br-row.top .dots { margin: 0dp 0dp 0dp 4dp; }
+.vox-body {
+    display: flex; flex-direction: column; padding: 4dp 14dp 6dp 14dp;
+    border-left-width: 1dp; border-right-width: 1dp;
+}
+.vox-main  { display: flex; flex-direction: row; align-items: center; }
+.vox-range { display: flex; flex-direction: column; align-items: flex-start; flex: 1 1 0dp; }
+.vmode     { font-family: "Chakra Petch"; font-size: 18dp; line-height: 22dp; letter-spacing: 3dp; white-space: nowrap; }
+.vreach    { display: flex; flex-direction: row; align-items: center; margin-top: 2dp; }
+.pips      { display: flex; flex-direction: row; flex-shrink: 0; margin-right: 8dp; }
+.pip       { width: 9dp; height: 5dp; margin-right: 3dp; transform: skewX(-20deg); }
+.vdist     { font-family: "Roboto Mono"; font-size: 13dp; flex-shrink: 0; }
+#wave      { width: 150dp; height: 38dp; flex-shrink: 0; }
+.vox-keys  { display: flex; flex-direction: row; justify-content: flex-end; align-items: center; margin-top: 6dp; }
+.vkey      { display: flex; flex-direction: row; align-items: center; margin-left: 14dp; }
+.keycap.sm { min-width: 18dp; height: 18dp; padding: 0dp 5dp; margin-right: 6dp; }
+.keycap.sm span { font-size: 11dp; }
+
+/* ---- help line ---- */
+#help { display: flex; flex-direction: row; align-items: center; padding: 7dp 34dp 7dp 34dp; }
+.keycap {
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    min-width: 26dp; height: 26dp; padding: 0dp 7dp; margin-right: 12dp;
+}
+.keycap.none { display: none; }
+.keycap span { font-family: "Chakra Petch"; font-size: 14dp; font-weight: bold; }
+/* the sizer keeps the line's width; the visible copy on top is unveiled by motion.lua (max-width) */
+.help-wrap { position: relative; display: block; max-width: 900dp; padding-right: 2dp; font-size: 17dp; }
+.help-size { visibility: hidden; white-space: nowrap; }
+.help-type {
+    position: absolute; left: 0dp; top: 0dp; white-space: nowrap; overflow: hidden; max-width: 900dp;
+    border-right-width: 2dp;
+}
+
+/* ---- CLEAN LOOK: no panel backgrounds, no outlines ------------------------------------------------
+   Remove this block to get the frames back. Without a backing, text gets a soft dark halo (the glow of
+   open77_shell's rail: it reads over a bright sky or a neon sign, where a 1dp shadow is lost) and the
+   unlit tracks (armor, gauges, speed bars, range pips) are a little denser so they stay visible. */
+#root                    { font-effect: glow(0dp 5dp 0dp 1dp #000000c7); }
+.aseg, .gauge, .vseg, .pip { background-color: #4fe3ff38; }
+.ring-track              { stroke: #4fe3ff47; }
+.br, .dots               { display: none; }
+.bio-body, .vox-body     { decorator: none; border-left-width: 0dp; border-right-width: 0dp; }
+#info                    { decorator: none; }
+#vehicle                 { decorator: none; }
+#help                    { decorator: none; }

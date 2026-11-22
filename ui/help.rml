@@ -1,0 +1,23 @@
+<rml>
+<head>
+    <title>opx_hud help</title>
+    <link type="text/rcss" href="nui://open77/open77.rcss"/>
+    <link type="text/rcss" href="hud.rcss"/>
+</head>
+<body data-model="hud">
+<div id="root">
+
+    <!-- Help line (ShowHelp / HideHelp): a key cap and a line that types itself in (Config.positions.help). -->
+    <div id="help-anchor" class="anchor" data-class-on="helpOn">
+        <div id="help">
+            <div id="help-key" class="keycap" data-class-none="helpKey == ''"><span>{{helpKey}}</span></div>
+            <div class="help-wrap">
+                <span class="help-size">{{helpText}}</span>
+                <span id="help-type" class="help-type">{{helpText}}</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</rml>

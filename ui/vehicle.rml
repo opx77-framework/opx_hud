@@ -1,0 +1,38 @@
+<rml>
+<head>
+    <title>opx_hud vehicle</title>
+    <link type="text/rcss" href="nui://open77/open77.rcss"/>
+    <link type="text/rcss" href="hud.rcss"/>
+</head>
+<body data-model="hud">
+<div id="root">
+
+    <!-- Vehicle dashboard: speed between two segmented bars, condition, engine state
+         (Config.positions.vehicle). Laid back, leaning with the car: this document's projection. -->
+    <div id="vehicle-anchor" class="anchor" data-class-on="vehicleOn">
+        <div id="vehicle" data-class-low="lowAt >= condition" data-class-off="!engineOn">
+            <div class="speed-row">
+                <div class="vbar left">
+                    <div class="vseg" data-for="s : segL" data-class-lit="speedPct >= s.t" data-class-hot="s.hot" data-style-height="s.h + 'dp'"></div>
+                </div>
+                <div class="speed-read">
+                    <span class="speed">{{speed}}</span>
+                    <span class="unit">{{speedUnit}}</span>
+                </div>
+                <div class="vbar right">
+                    <div class="vseg" data-for="s : segR" data-class-lit="speedPct >= s.t" data-class-hot="s.hot" data-style-height="s.h + 'dp'"></div>
+                </div>
+            </div>
+            <div class="cond-row">
+                <div class="hair"></div>
+                <span class="cap">{{t.condition}}</span>
+                <span class="num">{{condition}}%</span>
+                <div class="hair"></div>
+            </div>
+            <div class="engine-off" data-if="!engineOn"><span>{{t.engineOff}}</span></div>
+        </div>
+    </div>
+
+</div>
+</body>
+</rml>

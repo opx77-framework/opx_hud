@@ -1,0 +1,31 @@
+<rml>
+<head>
+    <title>opx_hud info</title>
+    <link type="text/rcss" href="nui://open77/open77.rcss"/>
+    <link type="text/rcss" href="hud.rcss"/>
+</head>
+<body data-model="hud">
+<div id="root">
+
+    <!-- Money and job strip (Config.positions.info); tilt and float: this document's projection. -->
+    <div id="info-anchor" class="anchor" data-class-on="infoOn">
+        <div id="info">
+            <div class="money-row" data-if="cashOn || bankOn">
+                <span id="cash" class="cash" data-if="cashOn">{{cash}}</span>
+                <span class="sep" data-if="cashOn &amp;&amp; bankOn">·</span>
+                <span class="cap" data-if="bankOn">{{t.bank}}</span>
+                <span id="bank" class="bank" data-if="bankOn">{{bank}}</span>
+            </div>
+            <div class="job-row" data-if="jobOn" data-class-off="!onDuty">
+                <span class="job">{{jobLabel}}</span>
+                <span class="sep" data-if="gradeLabel != ''">·</span>
+                <span class="grade" data-if="gradeLabel != ''">{{gradeLabel}}</span>
+                <div class="duty-dot"></div>
+                <span class="duty">{{onDuty ? t.onDuty : t.offDuty}}</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</rml>

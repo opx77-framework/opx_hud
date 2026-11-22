@@ -1,0 +1,57 @@
+<rml>
+<head>
+    <title>opx_hud voice</title>
+    <link type="text/rcss" href="nui://open77/open77.rcss"/>
+    <link type="text/rcss" href="hud.rcss"/>
+</head>
+<body data-model="hud">
+<div id="root">
+
+    <!-- Voice block, mirror of the biomonitor (Config.positions.voice): range mode and distance with one
+         pip per mode, a live waveform while talking (GPU effect, client/modules/wave.lua), the
+         push-to-talk and range keys. States: idle, talking (peak), muted, offline. -->
+    <div id="voice-anchor" class="anchor" data-class-on="voiceOn">
+        <div id="vox" data-class-talking="vState == 'talking'" data-class-muted="vState == 'muted'"
+             data-class-offline="vState == 'offline'" data-class-peak="vPeak">
+            <div class="br-row top">
+                <path class="br" view-box="0 0 14 14" d="M0.75 13 V0.75 H13"/>
+                <div class="dots"></div>
+                <span class="vox-state">{{vStateLabel}}</span>
+                <span class="bio-title">{{t.voice}}</span>
+                <path class="br" view-box="0 0 14 14" d="M1 0.75 H13.25 V13"/>
+            </div>
+            <div class="vox-body">
+                <div class="vox-main">
+                    <div class="vox-range">
+                        <span id="vmode" class="vmode">{{vMode}}</span>
+                        <div class="vreach">
+                            <div id="vpips" class="pips">
+                                <div class="pip" data-for="p : vPips" data-class-lit="p.on"></div>
+                            </div>
+                            <span id="vdist" class="vdist">{{vDist}}</span>
+                        </div>
+                    </div>
+                    <div id="wave" data-style-decorator="vWave"></div>
+                </div>
+                <div class="vox-keys">
+                    <div class="vkey">
+                        <div class="keycap sm ghost ptt"><span>{{vPtt}}</span></div>
+                        <span class="cap">{{t.voiceTalk}}</span>
+                    </div>
+                    <div class="vkey">
+                        <div class="keycap sm ghost"><span>{{vCycle}}</span></div>
+                        <span class="cap">{{t.voiceRange}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="br-row bottom">
+                <path class="br" view-box="0 0 14 14" d="M0.75 1 V13.25 H13"/>
+                <div class="dots"></div>
+                <path class="br" view-box="0 0 14 14" d="M13.25 1 V13.25 H1"/>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</rml>
